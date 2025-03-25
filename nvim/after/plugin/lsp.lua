@@ -24,6 +24,7 @@ require('mason-lspconfig').setup({
   ensure_installed = {
     'lua_ls',
     'clangd',
+    'golangci_lint_ls',
     'jedi_language_server'
   },
   handlers = {
@@ -51,7 +52,19 @@ require('mason-lspconfig').setup({
           }
         }
       })
-    end
+    end,
+
+	clangd = function()
+	  local cwd = vim.fn.getcwd()
+	  if (vim.fn.filereadable(cwd .. ".clangd") ~= 1 ) then
+		  vim.fn.system({'cp', "~/.config/nvim/after/configs/.clangd", cwd})
+	  end
+
+	  lspconfig.clangd.setup({
+		capabilities = lsp_capabilities,
+		cmd = { "clangd", "--compile-commands-dir=." }
+	  })
+	end
   }
 })
 
